@@ -1,10 +1,13 @@
 <script setup>
 import { reactive } from 'vue';
+import Cabecalho from './components/Cabecalho.vue'
+import Cadastro from './components/Cadastro.vue'
+import List from './components/List.vue'
 
 const estado = reactive({
   filtro: 'todas',
-  tarefaTemp:'',
-  tarefas:[
+  tarefaTemp: '',
+  tarefas: [
     {
       titulo: 'Estudar ES6',
       finalizada: false,
@@ -29,65 +32,40 @@ const getTarefasFinalizadas = () => {
 }
 
 const getTarefasFiltradas = () => {
-  const {filtro} = estado;
+  const { filtro } = estado;
 
-  switch(filtro){
+  switch (filtro) {
     case 'pendentes':
       return getTarefasPendentes();
-      case 'finalizadas':
+    case 'finalizadas':
       return getTarefasFinalizadas();
-      default:
-        return estado.tarefas
+    default:
+      return estado.tarefas
   }
 }
 
-const cadastraTarefa = () =>{
+const cadastraTarefa = () => {
   const tarefaNova = {
-    titulo:estado.tarefaTemp,
+    titulo: estado.tarefaTemp,
     finalizada: false
   }
-estado.tarefas.push(tarefaNova),
-estado.tarefaTemp = ''
+  estado.tarefas.push(tarefaNova),
+    estado.tarefaTemp = ''
 
 }
 </script>
 
 <template>
-<div class="container">
-  <header class="p-5 mb-4 mt-4 bg-light rounded-3">
-    <h1>Minhas Tarefas</h1>
-    <p>Você possui {{getTarefasPendentes().length}} tarefas pendentes</p>
-  </header>
-  <form @submit.prevent="cadastraTarefa">
-    <div class="row">
-      <div class="col">
-        <input :value="estado.tarefaTemp" @change="evento => estado.tarefaTemp = evento.target.value" required type="text" placeholder="Nome da Tarefa" class="form-control">
-      </div>
-      <div class="col-md-1">
-        <button class="btn btn-primary">Cadastrar</button>
-      </div>
-      <div class="col-md-2">
-        <select @change="evento => estado.filtro = evento.target.value" class="form-control" name="" id="">
-            <option value="todas">Todas</option>
-            <option value="pendentes">Pendentes</option>
-            <option value="finalizadas">Finalizadas</option>
-          </select>
-      </div>
-    </div>
-  </form>
-  <ul class=" mt-3 list-group">
-    <li class="list-group-item" v-for="tarefa in getTarefasFiltradas()">
-      <input @change="evento => tarefa.finalizada = evento.target.checked" :checked="tarefa.finalizada" type="checkbox" name="" id="" :id="tarefa.titulo">
-      <label :id="tarefa.titulo" :class="{done: tarefa.finalizada}" class="ms-4" :for="tarefa.titulo">
-        {{tarefa.titulo}}
-      </label>
-    </li>
-  </ul>
-</div>
+  <div class="container">
+    <Cabecalho :tarefas-pendentes="getTarefasPendentes().length" />
+    <Cadastro :troca-filtro="evento => estado.filtro = evento.target.value" :tarefa-temp="estado.tarefaTemp" :edita-tarefa-temp="evento => estado.tarefaTemp = evento.target.value"
+      :cadastra-tarefa="cadastraTarefa" />
+    <List :tarefas="getTarefasFiltradas()" />
+  </div>
 </template>
 
 <style scoped>
-.done{
+.done {
   text-decoration: line-through;
 }
 </style>
